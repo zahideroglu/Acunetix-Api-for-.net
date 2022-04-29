@@ -1,0 +1,57 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
+public static class Program
+ 
+
+{
+    static void Main(string[] args)
+    {
+        RunQueryForGet();
+    }
+    private static string RunQueryForGet()
+    {
+        string result = null;
+        try
+        {
+
+            var req = (HttpWebRequest)WebRequest.Create("https://acunetix/api/v1/scans");
+            req.Method = "GET";
+            req.ContentType = "application/json";
+            req.Headers.Add("X-Auth", "123123123");
+            var res = (HttpWebResponse)req.GetResponse();
+            req.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+         
+            using (var stream = res.GetResponseStream())
+            {
+                if (stream != null)
+                {
+                   var sr = new StreamReader(stream);
+                   result = sr.ReadToEnd();
+                   sr.Close();
+                }
+            }
+
+            Console.WriteLine(result);
+            Console.ReadLine();
+        }
+
+        catch (Exception ex)
+
+        {
+            Console.WriteLine(ex.StackTrace.ToString());
+            Console.WriteLine("Finishing program");
+            Console.ReadLine();
+        }
+        return result;
+
+    }
+
+}
